@@ -9,7 +9,8 @@ load_dotenv()
 
 bot_token = os.getenv("BOT_TOKEN")
 allowed_user_ids = list(map(int, os.getenv("USERS").split('|')))
-attacks = os.getenv("ATTACKS").split('|')
+attacks = os.getenv("ATTACKS", "").split('|')
+priorities = os.getenv("PRIORITY", "").split('|')
 
 async def send_telegram_message(user_id, message):
     """Sends a Telegram message."""
@@ -25,25 +26,44 @@ def parse_log_timestamp(log_line):
     else:
         return None
 
+def get_log_priority(log_line):
+    priority_match = re.search(r'\[Priority: (\d+)\]', log_line)
+    if priority_match:
+        return int(priority_match.group(1))
+    return None
+
 async def check_log_file(filename, start_time):
     with open(filename, "r") as f:
         for line in f:
             event_timestamp = parse_log_timestamp(line)
             if event_timestamp and event_timestamp > start_time:
-                attack_id_match = re.search(r'\[1:(\d+):[0-9]+\]', line)
-                if attack_id_match:
-                    attack_id = attack_id_match.group(1)
-                    if attack_id in attacks:
+                if priorities and priorities != ['']:
+                    priority_value = get_log_priority(line)
+                    if priority_value and str(priority_value) in priorities:
                         for user_id in allowed_user_ids:
-                            await send_telegram_message(user_id, f"NEW ATTACK DETECTED: {line}")
-                else:
-                    pass
+                            message = (
+                                            f"**HIGH PRIORITY EVENT (Priority {priority_value}) DETECTED:**\n"
+                                            f"```\n{line.strip()}\n```"
+                                        )
+                            await send_telegram_message(user_id,message)
+                elif attacks and attacks != ['']:
+                    attack_id_match = re.search(r'\[1:(\d+):[0-9]+\]', line)
+                    if attack_id_match:
+                        attack_id = attack_id_match.group(1)
+                        if attack_id in attacks:
+                            for user_id in allowed_user_ids:
+                                message = (
+                                    f"**NEW ATTACK DETECTED:**\n"
+                                    f"**Attack ID:** `{attack_id}`\n"
+                                    f"```\n{line.strip()}\n```"
+                                )
+                                await send_telegram_message(user_id,message)
         start_time = datetime.now()
     return start_time
 
 async def main() -> None:
     """Main function to monitor logs and send alerts."""
-    start_time = datetime.now() 
+    start_time = datetime.now()
     print("Alerting is enabled. Monitoring for attacks...")
     for user_id in allowed_user_ids:
         await send_telegram_message(user_id, "Alerting enabled. Monitoring for attacks...")
