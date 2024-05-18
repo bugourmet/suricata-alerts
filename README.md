@@ -44,6 +44,17 @@ Description of Parameters:
     ATTACKS: A list of attack IDs to filter by. This will be used if PRIORITY is not provided or is empty.
     ALLOWED_USER_IDS: A list of user IDs to send Telegram messages to. Ensure that these are valid Telegram user IDs.
 
+### Testing 🧪
+
+To ensure that the code works as expected, you can run the following command in your terminal:
+
+```bash
+curl http://testmynids.org/uid/index.html
+```
+
+If you have added pyiority level 2 to your .env you should get the following messages :
+![Screen](./images/screen.jpg)
+
 ## Contributing 🤝
 
 Contributions are welcome! If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
