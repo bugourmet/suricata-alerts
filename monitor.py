@@ -42,7 +42,7 @@ async def check_log_file(filename, start_time):
                         for user_id in allowed_user_ids:
                             message = (
                                             f"*HIGH PRIORITY EVENT (Priority {priority_value}) DETECTED:*\n"
-                                            f"```\n{line.strip()}\n```"
+                                            f"```perl\n{line.strip()}\n```"
                                         )
                             await send_telegram_message(user_id,message)
                 elif attacks and attacks != ['']:
@@ -54,7 +54,7 @@ async def check_log_file(filename, start_time):
                                 message = (
                                     f"*NEW ATTACK DETECTED:*\n"
                                     f"*Attack ID:* `{attack_id}`\n"
-                                    f"```\n{line.strip()}\n```"
+                                    f"```perl\n{line.strip()}\n```"
                                 )
                                 await send_telegram_message(user_id,message)
         start_time = datetime.now()
