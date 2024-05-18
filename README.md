@@ -31,17 +31,19 @@ This Python script 🐍 monitors Suricata logs for specified attack IDs and send
 
 ## Configuration ⚙️
 
-| Variable    | Description                                                     |
-| ----------- | --------------------------------------------------------------- |
-| `BOT_TOKEN` | Your Telegram bot token.                                        |
-| `USERS`     | Pipe-separated list of user IDs for alerts.                     |
-| `ATTACKS`   | Pipe-separated list of attack IDs to monitor.                   |
-| `PRIORITY`  | Pipe-separated desired priority level to filter (e.g., `1,2,3`) |
+| Variable             | Description                                                      |
+| -------------------- | ---------------------------------------------------------------- |
+| `BOT_TOKEN`          | Your Telegram bot token.                                         |
+| `USERS`              | Comma-separated list of user IDs for alerts.                     |
+| `ATTACK_IDS`         | Comma-separated list of attack IDs to monitor.                   |
+| `IGNORED_ATTACK_IDS` | Comma-separated list of attack IDs to ignore.                    |
+| `PRIORITY`           | Comma-separated desired priority level to filter (e.g., `1,2,3`) |
 
 Description of Parameters:
 
     PRIORITY: A pipe-separated string of desired priority levels to filter by (e.g., 1|2|3). This is optional. If provided, the program will check log entries for these priority levels and alert based on them. If not provided or left empty, the program will fall back to checking by attack IDs.
-    ATTACKS: A list of attack IDs to filter by. This will be used if PRIORITY is not provided or is empty.
+    ATTACK_IDS: A list of attack IDs to filter by. This will be used if PRIORITY is not provided or is empty.
+    IGNORED_ATTACK_IDS: A list of attack IDs that will be ignored when sending alerts.
     ALLOWED_USER_IDS: A list of user IDs to send Telegram messages to. Ensure that these are valid Telegram user IDs.
 
 ### Testing 🧪
@@ -52,8 +54,13 @@ To ensure that the code works as expected, you can run the following command in 
 curl http://testmynids.org/uid/index.html
 ```
 
-If you have added pyiority level 2 to your .env you should get the following messages :
-![Screen](./images/screen.jpg)
+If you have set up using priorities as filter,you results should look like :
+
+![Screen](./images/priority-results.jpg)
+
+For attack id's results :
+
+![Screen](./images/id-results.jpg)
 
 ## Contributing 🤝
 
