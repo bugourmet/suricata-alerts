@@ -4,6 +4,8 @@ import re
 from datetime import datetime
 from dotenv import load_dotenv
 from telegram import Bot
+from telegram.error import TimedOut
+
 load_dotenv()
 
 bot_token = os.getenv("BOT_TOKEN")
@@ -15,7 +17,10 @@ priorities = os.getenv("PRIORITY", "").split(',')
 async def send_telegram_message(user_id, message):
     """Sends a Telegram message."""
     bot = Bot(token=bot_token)
-    await bot.send_message(chat_id=user_id, text=message,parse_mode='Markdown')
+    try:
+        await bot.send_message(chat_id=user_id, text=message, parse_mode='Markdown')
+    except TimedOut as e:
+        print(f"Error: Telegram message send timed out for user {user_id}. Exception: {e}")
 
 def parse_log_timestamp(log_line):
     timestamp_match = re.search(r'\d{2}/\d{2}/\d{4}-\d{2}:\d{2}:\d{2}\.\d{6}', log_line)
@@ -61,7 +66,6 @@ async def check_log_file(filename, start_time):
                         await send_telegram_message(user_id, message)
     start_time = datetime.now()
     return start_time
-
 
 async def main() -> None:
     """Main function to monitor logs and send alerts."""
